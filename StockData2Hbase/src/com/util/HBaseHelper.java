@@ -16,7 +16,6 @@ import org.mortbay.log.Log;
 /**
  * https://github.com/larsgeorge/hbase-book/blob/master/common/src/main/java/util/HBaseHelper.java
  * @author zhihua.yang
- *
  */
 public class HBaseHelper implements Closeable {
 
