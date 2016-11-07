@@ -1,7 +1,6 @@
 package com.util;
 
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -16,6 +15,7 @@ import org.mortbay.log.Log;
 /**
  * https://github.com/larsgeorge/hbase-book/blob/master/common/src/main/java/util/HBaseHelper.java
  * @author zhihua.yang
+ *
  */
 public class HBaseHelper implements Closeable {
 
@@ -35,14 +35,14 @@ public class HBaseHelper implements Closeable {
 	}
 
 	/**
-	 * �ر�
+	 * 关闭
 	 */
 	public void close() throws IOException {
 		connection.close();
 	}
 
 	/**
-	 * ��ȡ���Ӷ���
+	 * 获取连接对象
 	 * 
 	 * @return
 	 */
@@ -51,7 +51,7 @@ public class HBaseHelper implements Closeable {
 	}
 
 	/**
-	 * ��ȡ���ö���
+	 * 获取配置对象
 	 * 
 	 * @return
 	 */
@@ -73,7 +73,7 @@ public class HBaseHelper implements Closeable {
 	 * 
 	 * @param namespace
 	 * @param force
-	 *            �Ƿ�ɾ���
+	 *            是否删除表
 	 */
 	public void dropNamespace(String namespace, boolean force) {
 		if (force) {
@@ -99,7 +99,7 @@ public class HBaseHelper implements Closeable {
 	}
 
 	/**
-	 * �жϱ����Ƿ����
+	 * 判断表名是否存在
 	 * 
 	 * @param tableName
 	 * @return
@@ -124,7 +124,7 @@ public class HBaseHelper implements Closeable {
 	}
 
 	/**
-	 * ������
+	 * 创建表
 	 * @param tableName
 	 * @param maxVersions
 	 * @param splitKeys
@@ -149,7 +149,7 @@ public class HBaseHelper implements Closeable {
 		}
 	}
 	/**
-	 * ���ñ�
+	 * 禁用表
 	 * @param tableName
 	 */
 	public void disableTable(TableName tableName)
@@ -164,7 +164,7 @@ public class HBaseHelper implements Closeable {
 		}
 	}
 	/**
-	 * ���ñ�
+	 * 启用表
 	 * @param tableName
 	 */
 	public void enableTable(TableName tableName)
@@ -179,7 +179,7 @@ public class HBaseHelper implements Closeable {
 		}
 	}
 	/**
-	 * ɾ���
+	 * 删除表
 	 * @param tableName
 	 */
 	public void dropTable(TableName tableName)
@@ -195,7 +195,7 @@ public class HBaseHelper implements Closeable {
 		}
 	}
 	/**
-	 * ɾ���
+	 * 删除表
 	 * @param tableName
 	 */
 	public void dropTable(String tableName)
