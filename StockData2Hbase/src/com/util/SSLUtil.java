@@ -24,14 +24,14 @@ public final class SSLUtil {
 	 * 
 	 * @deprecated see {@link #_hostnameVerifier}.
 	 */
-	private static com.sun.net.ssl.HostnameVerifier __hostnameVerifier;
+	//private static com.sun.net.ssl.HostnameVerifier __hostnameVerifier;
 
 	/**
 	 * Thrust managers for the Sun's deprecated API.
 	 * 
 	 * @deprecated see {@link #_trustManagers}.
 	 */
-	private static com.sun.net.ssl.TrustManager[] __trustManagers;
+	//private static com.sun.net.ssl.TrustManager[] __trustManagers;
 
 	/**
 	 * Hostname verifier.
@@ -51,11 +51,11 @@ public final class SSLUtil {
 	 */
 	private static void __trustAllHostnames() {
 		// Create a trust manager that does not validate certificate chains
-		if (__hostnameVerifier == null) {
-			__hostnameVerifier = new _FakeHostnameVerifier();
-		} // if
+		//if (__hostnameVerifier == null) {
+		//	__hostnameVerifier = new _FakeHostnameVerifier();
+		//} // if
 			// Install the all-trusting host name verifier
-		com.sun.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(__hostnameVerifier);
+		//com.sun.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(__hostnameVerifier);
 	} // __trustAllHttpsCertificates
 
 	/**
@@ -65,20 +65,20 @@ public final class SSLUtil {
 	 * @deprecated see {@link #_trustAllHttpsCertificates()}.
 	 */
 	private static void __trustAllHttpsCertificates() {
-		com.sun.net.ssl.SSLContext context;
+		//com.sun.net.ssl.SSLContext context;
 
 		// Create a trust manager that does not validate certificate chains
-		if (__trustManagers == null) {
-			__trustManagers = new com.sun.net.ssl.TrustManager[] { new _FakeX509TrustManager() };
-		} // if
+		//if (__trustManagers == null) {
+		//	__trustManagers = new com.sun.net.ssl.TrustManager[] { new _FakeX509TrustManager() };
+		//} // if
 			// Install the all-trusting trust manager
-		try {
-			context = com.sun.net.ssl.SSLContext.getInstance("SSL");
-			context.init(null, __trustManagers, new SecureRandom());
-		} catch (GeneralSecurityException gse) {
-			throw new IllegalStateException(gse.getMessage());
-		} // catch
-		com.sun.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+		//try {
+		//	context = com.sun.net.ssl.SSLContext.getInstance("SSL");
+		//	context.init(null, __trustManagers, new SecureRandom());
+		//} catch (GeneralSecurityException gse) {
+		//	throw new IllegalStateException(gse.getMessage());
+		//} // catch
+		//com.sun.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
 	} // __trustAllHttpsCertificates
 
 	/**
@@ -157,7 +157,7 @@ public final class SSLUtil {
 	 * 
 	 * @deprecated see {@link SSLUtil.FakeHostnameVerifier}.
 	 */
-	public static class _FakeHostnameVerifier implements com.sun.net.ssl.HostnameVerifier {
+	//public static class _FakeHostnameVerifier implements com.sun.net.ssl.HostnameVerifier {
 
 		/**
 		 * Always return true, indicating that the host name is an acceptable match with the server's authentication
@@ -167,10 +167,10 @@ public final class SSLUtil {
 		 * @param session the SSL session used on the connection to host.
 		 * @return the true boolean value indicating the host name is trusted.
 		 */
-		public boolean verify(String hostname, String session) {
-			return (true);
-		} // verify
-	} // _FakeHostnameVerifier
+		//public boolean verify(String hostname, String session) {
+		//	return (true);
+		//} // verify
+	//} // _FakeHostnameVerifier
 
 	/**
 	 * This class allow any X509 certificates to be used to authenticate the remote side of a secure socket, including
@@ -180,42 +180,42 @@ public final class SSLUtil {
 	 * 
 	 * @deprecated see {@link SSLUtil.FakeX509TrustManager}.
 	 */
-	public static class _FakeX509TrustManager implements com.sun.net.ssl.X509TrustManager {
-
-		/**
-		 * Empty array of certificate authority certificates.
-		 */
-		private static final X509Certificate[] _AcceptedIssuers = new X509Certificate[] {};
-
-		/**
-		 * Always return true, trusting for client SSL chain peer certificate chain.
-		 * 
-		 * @param chain the peer certificate chain.
-		 * @return the true boolean value indicating the chain is trusted.
-		 */
-		public boolean isClientTrusted(X509Certificate[] chain) {
-			return (true);
-		} // checkClientTrusted
-
-		/**
-		 * Always return true, trusting for server SSL chain peer certificate chain.
-		 * 
-		 * @param chain the peer certificate chain.
-		 * @return the true boolean value indicating the chain is trusted.
-		 */
-		public boolean isServerTrusted(X509Certificate[] chain) {
-			return (true);
-		} // checkServerTrusted
-
-		/**
-		 * Return an empty array of certificate authority certificates which are trusted for authenticating peers.
-		 * 
-		 * @return a empty array of issuer certificates.
-		 */
-		public X509Certificate[] getAcceptedIssuers() {
-			return (_AcceptedIssuers);
-		} // getAcceptedIssuers
-	} // _FakeX509TrustManager
+//	public static class _FakeX509TrustManager implements com.sun.net.ssl.X509TrustManager {
+//
+//		/**
+//		 * Empty array of certificate authority certificates.
+//		 */
+//		private static final X509Certificate[] _AcceptedIssuers = new X509Certificate[] {};
+//
+//		/**
+//		 * Always return true, trusting for client SSL chain peer certificate chain.
+//		 * 
+//		 * @param chain the peer certificate chain.
+//		 * @return the true boolean value indicating the chain is trusted.
+//		 */
+//		public boolean isClientTrusted(X509Certificate[] chain) {
+//			return (true);
+//		} // checkClientTrusted
+//
+//		/**
+//		 * Always return true, trusting for server SSL chain peer certificate chain.
+//		 * 
+//		 * @param chain the peer certificate chain.
+//		 * @return the true boolean value indicating the chain is trusted.
+//		 */
+//		public boolean isServerTrusted(X509Certificate[] chain) {
+//			return (true);
+//		} // checkServerTrusted
+//
+//		/**
+//		 * Return an empty array of certificate authority certificates which are trusted for authenticating peers.
+//		 * 
+//		 * @return a empty array of issuer certificates.
+//		 */
+//		public X509Certificate[] getAcceptedIssuers() {
+//			return (_AcceptedIssuers);
+//		} // getAcceptedIssuers
+//	} // _FakeX509TrustManager
 
 	/**
 	 * This class implements a fake hostname verificator, trusting any host name.

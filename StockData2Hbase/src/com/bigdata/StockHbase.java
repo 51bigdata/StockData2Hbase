@@ -2,7 +2,9 @@ package com.bigdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -16,8 +18,13 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.mortbay.log.Log;
+
 import com.google.common.io.Closeables;
 import com.util.ExcelPoi;
 
@@ -32,6 +39,10 @@ import com.util.ExcelPoi;
 public class StockHbase {
 	public static Configuration configuration;
 	static String tablename = "stock";
+	/**
+	 * 买盘0 卖盘1 中性盘2
+	 */
+	private static String nature="";
 	static {
 		// 默认加载已有的数据
 		configuration = HBaseConfiguration.create();
@@ -45,12 +56,22 @@ public class StockHbase {
 		// 删除表
 		//deleteTable();
 		// 创建表
-		createTable();
+		//createTable();
 		// 添加数据
-		insertTableData();
+		//insertTableData();
 		// 读取数据
-		// getData();
-		Log.info("--over--");
+		List<String> listPrice=new ArrayList<String>();
+		listPrice.add("26.19");
+		listPrice.add("26.3");
+		listPrice.add("26.49");
+		listPrice.add("26.5");
+		listPrice.add("26.6");
+		for(String price:listPrice)
+		{
+		 getData(price);
+		}
+		 Log.info("--over--");
+		System.out.println("--over--");
 	}
 
 	/**
@@ -163,10 +184,10 @@ public class StockHbase {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void insert(HTable table, String colFamilyName,
 			String rowKey, List<String> rowData, String code) {
-		Put put = new Put(Bytes.toBytes(rowKey));
-		;
+		Put put = new Put(Bytes.toBytes(rowKey));	
 		// 添加数据
 		put.add(Bytes.toBytes("data"), Bytes.toBytes("time"),
 				Bytes.toBytes(rowData.get(0)));
@@ -178,8 +199,19 @@ public class StockHbase {
 				Bytes.toBytes(rowData.get(3)));
 		put.add(Bytes.toBytes("data"), Bytes.toBytes("turnover"),
 				Bytes.toBytes(rowData.get(4)));
+		
+		/* 买盘0 卖盘1 中性盘2*/
+		 nature="0";
+		if("卖盘".equals(rowData.get(5)))
+		{
+			nature="1";
+		}
+		else if("中性盘".equals(rowData.get(5)))
+		{
+			nature="2";
+		}
 		put.add(Bytes.toBytes("data"), Bytes.toBytes("nature"),
-				Bytes.toBytes(rowData.get(5)));
+				Bytes.toBytes(nature));
 		put.add(Bytes.toBytes("data"), Bytes.toBytes("code"),
 				Bytes.toBytes(code));
 
@@ -193,22 +225,62 @@ public class StockHbase {
 	/**
 	 * 获取hbase数据
 	 */
-	public static void getData() {
+	public static void getData(String price) {
 		Scan scan = new Scan();
+		
+		   Filter filter = new SingleColumnValueFilter(Bytes  
+                   .toBytes("data"),Bytes.toBytes("price"), CompareOp.EQUAL, Bytes  
+                   .toBytes(price)); 
+		   
+		   FilterList lstFilter=new FilterList();
+		   lstFilter.addFilter(filter);
+		   
+		   scan.setFilter(lstFilter);
 		ResultScanner rs = null;
+		
+		double number=0;
+		double money=0;
+		double buyNumber=0;
+		double buyMoney=0;
+		double saleNumber=0;
+		double saleMoney=0;
+		HTable table =null;
 		try {
-			HTable table = new HTable(configuration, Bytes.toBytes(tablename));
+			table = new HTable(configuration, Bytes.toBytes(tablename));
 			rs = table.getScanner(scan);
 			for (Result r : rs) {
-				for (KeyValue kv : r.list()) {
+			String natureValue=Bytes.toString(r.getValue(("data").getBytes(), "nature".getBytes()));
+			double snumber=Double.parseDouble(Bytes.toString(r.getValue(("data").getBytes(), "number".getBytes())));
+			double sturnover=Double.parseDouble(Bytes.toString(r.getValue(("data").getBytes(), "turnover".getBytes())));
+			if(natureValue.equals("0"))
+			{
+				buyNumber+=snumber;
+				buyMoney+=sturnover;
+			}
+			else
+			{
+				saleNumber+=snumber;
+				saleMoney+=sturnover;
+			}
+			for (KeyValue kv : r.list()) {
+				/*
 					System.out.println("row:" + Bytes.toString(kv.getRow()));
 					System.out.println("family:"
 							+ Bytes.toString(kv.getFamily()));
 					System.out.println("qualifier:"
 							+ Bytes.toString(kv.getQualifier()));
-					System.out
-							.println("value:" + Bytes.toString(kv.getValue()));
-					System.out.println("timestamp:" + kv.getTimestamp());
+					*/
+					if(Bytes.toString(kv.getQualifier()).equals("number"))
+					{
+						number+=Double.parseDouble(Bytes.toString(kv.getValue()));
+					}
+					
+					if(Bytes.toString(kv.getQualifier()).equals("turnover"))
+					{
+						money+=Double.parseDouble(Bytes.toString(kv.getValue()));
+					}
+					//System.out.println("value:" + Bytes.toString(kv.getValue()));
+					//System.out.println("timestamp:" + kv.getTimestamp());
 					// 组合
 					String rowInfo = "row:" + Bytes.toString(kv.getRow())
 							+ " family:" + Bytes.toString(kv.getFamily());
@@ -217,15 +289,18 @@ public class StockHbase {
 					rowInfo += " value:" + Bytes.toString(kv.getValue());
 					rowInfo += " timestamp:" + kv.getTimestamp();
 					com.util.Log.writeDataLog(rowInfo);
-					System.out
-							.println("-------------------------------------------");
+					//System.out.println("-------------------------------------------");
 				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		finally
+		{
+		
+		}
+       System.out.println("单价:"+price+"数量:"+number+"成交额:"+money+"买："+buyNumber+"/"+buyMoney+" 卖:"+saleNumber+"/"+saleMoney);
 	}
 
 	/**

@@ -2,9 +2,12 @@ package com.util;
 
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -344,8 +347,10 @@ public class HttpUtil {
 			HttpGet httpGet = getHttpGet(url, null, "utf-8");
 			// 发送请求获得返回结果
 			HttpResponse response = client.execute(httpGet);
+		
 			// 如果成功
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {				
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {	
+				System.out.println("Entity"+response.getEntity().getContent().toString());
 				byte[] result = EntityUtils.toByteArray(response.getEntity());
 				
 				//暂无数据
@@ -359,7 +364,16 @@ public class HttpUtil {
 						f.getParentFile().mkdirs();
 					// 写入文件				
 					bw = new BufferedOutputStream(new FileOutputStream(path));
+					System.out.println(result.toString());
 					bw.write(result);
+					bw.flush();
+					bw.close();
+					
+//					 OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
+//					  BufferedWriter writer = new BufferedWriter(write);
+//					  writer.write(bw);
+//					  writer.close();
+					   
 				} catch (Exception e) {
 					log.error("保存文件错误,path=" + path + ",url=" + url, e);
 				} finally {
@@ -407,7 +421,7 @@ public class HttpUtil {
 		//股票代码
 		String code="sz002610";
 		//日期
-		String date="20161104";
+		String date="20161111";
 		fileName=code+"_交易明细_"+date+".xls";
 		//保存本地路径
 		String saveFilePath= System.getProperty("user.dir") + "/data/"+fileName;
